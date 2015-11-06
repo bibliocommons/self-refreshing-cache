@@ -17,4 +17,4 @@ Used extensively in production at BiblioCommons since late 2010.
 
 ## Contributors
 
-[Contributors.md](https://github.com/bibliocommons/self-refreshing-cache/contributors.md)
+See [contributors.md](contributors.md)
