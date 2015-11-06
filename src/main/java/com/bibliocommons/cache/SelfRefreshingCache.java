@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * SelfRefreshingCache - a cache with loading semantics which supports automatic background refresh via a configurable threadpool.
  * Exceptions caught during loading will be and passed off to handleInitialException if on initial load, otherwise will be ignored.
- *
+ * <p/>
  * WARNING: Exceptions which occur during loading will delay subsequent updates to the value until the next update interval.
  * No guarantees are made to the freshness of the value.
  *
@@ -47,6 +47,10 @@ public class SelfRefreshingCache<K, V> {
         }
     }
 
+    public static <K, V> Builder<K, V> builder() {
+        return new Builder<K, V>();
+    }
+
     private Map<K, CacheValueProxy<K, V>> cache;
 
     private long refreshInterval;
@@ -60,36 +64,25 @@ public class SelfRefreshingCache<K, V> {
     private boolean useDefaultValueForInitialLoad = false;
 
     /**
-     * @param cacheName       - must be unique
-     * @param loadStrategy    - the strategy used when performing background refreshes
-     * @param refreshInterval in millis
-     * @param maxInitialDelay
-     * @param maxElements     - the maximum number of elements allowed in this cache
+     * @param loadStrategy                  - the strategy used when performing background refreshes
+     * @param refreshInterval               - the interval of time between refreshes in millis
+     * @param maxElements                   - the maximum number of elements allowed in this cache
+     * @param defaultValue                  - a default value for keys which have not been loaded
+     * @param useDefaultValueForInitialLoad - whether to use the default value on the initial load rather than perform a load using the load strategy.
      */
-    @SuppressWarnings("unchecked")
-    public SelfRefreshingCache(LoadStrategy<K, V> loadStrategy, long refreshInterval, int maxElements) {
-        Preconditions.checkArgument(refreshInterval >= MIN_REFRESH_INTERVAL, "refreshInterval cannot be less than 1 minute");
+    SelfRefreshingCache(LoadStrategy<K, V> loadStrategy, long refreshInterval, int maxElements, V defaultValue,
+                        boolean useDefaultValueForInitialLoad) {
 
         this.loadStrategy = loadStrategy;
         this.refreshInterval = refreshInterval;
         this.maxInitialDelay = (long) (refreshInterval * REFRESH_PERIOD_PROPORTION);
         this.failedInitialLoadDelay = FAILED_INITIAL_LOAD_REFRESH_INTERVAL;
 
-        cache = new ConcurrentHashMap<K, CacheValueProxy<K, V>>(new LRUMap(maxElements));
-    }
-
-    public SelfRefreshingCache(LoadStrategy<K, V> loadStrategy, long refreshInterval, int maxElements, V defaultValue) {
-        this(loadStrategy, refreshInterval, maxElements, defaultValue, false);
-    }
-
-    public SelfRefreshingCache(LoadStrategy<K, V> loadStrategy, long refreshInterval, int maxElements, V defaultValue,
-                               boolean useDefaultValueForInitialLoad) {
-        this(loadStrategy, refreshInterval, maxElements);
-
-        Preconditions.checkArgument(defaultValue != null, "defaultValue cannot be null");
-
         this.defaultValue = defaultValue;
         this.useDefaultValueForInitialLoad = useDefaultValueForInitialLoad;
+
+        //noinspection unchecked
+        cache = new ConcurrentHashMap<K, CacheValueProxy<K, V>>(new LRUMap(maxElements));
     }
 
     /**
@@ -190,5 +183,52 @@ public class SelfRefreshingCache<K, V> {
 
     public long getMaxInitialDelay() {
         return maxInitialDelay;
+    }
+
+    public static class Builder<K, V> {
+
+        private long refreshInterval;
+        private LoadStrategy<K, V> loadStrategy;
+        private V defaultValue;
+        private boolean useDefaultValueForInitialLoad;
+        private int maxElements = 1000;
+
+        private Builder() {
+
+        }
+
+        public Builder<K, V> refreshInterval(long refreshInterval) {
+            this.refreshInterval = refreshInterval;
+            return this;
+        }
+
+        public Builder<K, V> loadStrategy(LoadStrategy<K, V> loadStrategy) {
+            this.loadStrategy = loadStrategy;
+            return this;
+        }
+
+        public Builder<K, V> defaultValue(V defaultValue) {
+            this.defaultValue = defaultValue;
+            return this;
+        }
+
+        public Builder<K, V> useDefaultValueForInitialLoad() {
+            this.useDefaultValueForInitialLoad = true;
+            return this;
+        }
+
+        public Builder<K, V> maxElements(int maxElements) {
+            this.maxElements = maxElements;
+            return this;
+        }
+
+        public SelfRefreshingCache<K, V> build() {
+
+            Preconditions.checkNotNull(loadStrategy);
+            Preconditions.checkArgument(refreshInterval >= MIN_REFRESH_INTERVAL, "refreshInterval cannot be less than 1 minute");
+            Preconditions.checkArgument(maxElements > 0, "maxElements must be greater than zero.");
+
+            return new SelfRefreshingCache<K, V>(loadStrategy, refreshInterval, maxElements, defaultValue, useDefaultValueForInitialLoad);
+        }
     }
 }

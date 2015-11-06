@@ -25,7 +25,10 @@ public class SelfRefreshingCacheTest {
     public void testGet() {
 
         LoadStrategy<String, MockValue> mockLoadStrategy = new TestLoadStrategy();
-        SelfRefreshingCache<String, MockValue> cache = new SelfRefreshingCache<String, MockValue>(mockLoadStrategy, REFRESH_PERIOD, 1000);
+
+        SelfRefreshingCache.Builder<String, MockValue> builder = SelfRefreshingCache.builder();
+        SelfRefreshingCache<String, MockValue> cache = builder.loadStrategy(mockLoadStrategy).refreshInterval(REFRESH_PERIOD).build();
+
         Float expectedMaxInitialDelay = (REFRESH_PERIOD * SelfRefreshingCache.getRefreshPeriodProportion());
         assertEquals((Long) cache.getMaxInitialDelay(), (Long) expectedMaxInitialDelay.longValue());
 
@@ -44,7 +47,10 @@ public class SelfRefreshingCacheTest {
     public void testGetMultipleKeys() {
 
         LoadStrategy<String, MockValue> mockLoadStrategy = new TestLoadStrategy();
-        SelfRefreshingCache<String, MockValue> cache = new SelfRefreshingCache<String, MockValue>(mockLoadStrategy, REFRESH_PERIOD, 1000);
+
+        SelfRefreshingCache.Builder<String, MockValue> builder = SelfRefreshingCache.builder();
+        SelfRefreshingCache<String, MockValue> cache = builder.loadStrategy(mockLoadStrategy).refreshInterval(REFRESH_PERIOD).build();
+
         Float expectedMaxInitialDelay = (REFRESH_PERIOD * SelfRefreshingCache.getRefreshPeriodProportion());
         assertEquals((Long) cache.getMaxInitialDelay(), (Long) expectedMaxInitialDelay.longValue());
 
@@ -70,7 +76,9 @@ public class SelfRefreshingCacheTest {
     public void testGetNull() throws InterruptedException {
 
         LoadStrategy<String, MockValue> mockLoadStrategy = new TestLoadStrategy();
-        SelfRefreshingCache<String, MockValue> cache = new SelfRefreshingCache<String, MockValue>(mockLoadStrategy, REFRESH_PERIOD, 1000);
+
+        SelfRefreshingCache.Builder<String, MockValue> builder = SelfRefreshingCache.builder();
+        SelfRefreshingCache<String, MockValue> cache = builder.loadStrategy(mockLoadStrategy).refreshInterval(REFRESH_PERIOD).build();
 
         MockValue retrievedMockObject = cache.get("null");
         assertNull(retrievedMockObject);
@@ -92,7 +100,9 @@ public class SelfRefreshingCacheTest {
     public void testGetLoadsUpdate() throws InterruptedException {
 
         LoadStrategy<String, MockValue> mockLoadStrategy = new TestLoadStrategy();
-        SelfRefreshingCache<String, MockValue> cache = new SelfRefreshingCache<String, MockValue>(mockLoadStrategy, REFRESH_PERIOD, 1000);
+
+        SelfRefreshingCache.Builder<String, MockValue> builder = SelfRefreshingCache.builder();
+        SelfRefreshingCache<String, MockValue> cache = builder.loadStrategy(mockLoadStrategy).refreshInterval(REFRESH_PERIOD).build();
 
         MockValue retrievedMockObject = cache.get("testKey");
         assertNotNull(retrievedMockObject);
@@ -127,7 +137,9 @@ public class SelfRefreshingCacheTest {
             }
         };
 
-        SelfRefreshingCache<String, MockValue> cache = new SelfRefreshingCache<String, MockValue>(loadStrategyThrowingExceptions, REFRESH_PERIOD, 1000);
+        SelfRefreshingCache.Builder<String, MockValue> builder = SelfRefreshingCache.builder();
+        SelfRefreshingCache<String, MockValue> cache = builder.loadStrategy(loadStrategyThrowingExceptions).refreshInterval(REFRESH_PERIOD).build();
+
         cache.get("testKey");
     }
 
@@ -135,7 +147,9 @@ public class SelfRefreshingCacheTest {
     public void testExceptionOnSubsequentLoad() throws InterruptedException {
 
         LoadStrategy<String, MockValue> mockLoadStrategy = new TestLoadStrategy();
-        SelfRefreshingCache<String, MockValue> cache = new SelfRefreshingCache<String, MockValue>(mockLoadStrategy, REFRESH_PERIOD, 1000);
+
+        SelfRefreshingCache.Builder<String, MockValue> builder = SelfRefreshingCache.builder();
+        SelfRefreshingCache<String, MockValue> cache = builder.loadStrategy(mockLoadStrategy).refreshInterval(REFRESH_PERIOD).build();
 
         try {
             MockValue retrievedMockObject = cache.get("testKey");
@@ -168,7 +182,9 @@ public class SelfRefreshingCacheTest {
     public void testGetForce() throws Throwable {
 
         LoadStrategy<String, MockValue> mockLoadStrategy = new TestLoadStrategy();
-        SelfRefreshingCache<String, MockValue> cache = new SelfRefreshingCache<String, MockValue>(mockLoadStrategy, REFRESH_PERIOD, 1000);
+
+        SelfRefreshingCache.Builder<String, MockValue> builder = SelfRefreshingCache.builder();
+        SelfRefreshingCache<String, MockValue> cache = builder.loadStrategy(mockLoadStrategy).refreshInterval(REFRESH_PERIOD).build();
 
         MockValue retrievedMockObject = cache.get("testKey");
         assertNotNull(retrievedMockObject);
@@ -198,7 +214,8 @@ public class SelfRefreshingCacheTest {
             }
         };
 
-        SelfRefreshingCache<String, MockValue> cache = new SelfRefreshingCache<String, MockValue>(loadStrategyThrowingException, REFRESH_PERIOD, 1000, defaultValue);
+        SelfRefreshingCache.Builder<String, MockValue> builder = SelfRefreshingCache.builder();
+        SelfRefreshingCache<String, MockValue> cache = builder.loadStrategy(loadStrategyThrowingException).refreshInterval(REFRESH_PERIOD).defaultValue(defaultValue).build();
 
         MockValue retrievedMockObject = cache.get("testKey");
         assertNotNull(retrievedMockObject);
@@ -211,7 +228,9 @@ public class SelfRefreshingCacheTest {
         SelfRefreshingCache.MIN_REFRESH_INTERVAL = REFRESH_PERIOD;
         MockValue defaultValue = new MockObject("default");
         LoadStrategy<String, MockValue> mockLoadStrategy = new TestLoadStrategy();
-        SelfRefreshingCache<String, MockValue> cache = new SelfRefreshingCache<String, MockValue>(mockLoadStrategy, REFRESH_PERIOD, 1000, defaultValue, true);
+
+        SelfRefreshingCache.Builder<String, MockValue> builder = SelfRefreshingCache.builder();
+        SelfRefreshingCache<String, MockValue> cache = builder.loadStrategy(mockLoadStrategy).refreshInterval(REFRESH_PERIOD).defaultValue(defaultValue).useDefaultValueForInitialLoad().build();
 
         MockValue retrievedMockObject = cache.get("testKey");
         assertNotNull(retrievedMockObject);
@@ -222,7 +241,9 @@ public class SelfRefreshingCacheTest {
     public void testGetRandomInitialDelay() throws IllegalArgumentException {
 
         LoadStrategy<String, MockValue> mockLoadStrategy = new TestLoadStrategy();
-        SelfRefreshingCache<String, MockValue> cache = new SelfRefreshingCache<String, MockValue>(mockLoadStrategy, REFRESH_PERIOD, 1000);
+
+        SelfRefreshingCache.Builder<String, MockValue> builder = SelfRefreshingCache.builder();
+        SelfRefreshingCache<String, MockValue> cache = builder.loadStrategy(mockLoadStrategy).refreshInterval(REFRESH_PERIOD).build();
 
         for (int i = 0; i < 10000; i++) {
             long randomOffset = cache.getRandomDelayOffset(cache.getMaxInitialDelay());
