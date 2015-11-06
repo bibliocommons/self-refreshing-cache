@@ -13,7 +13,7 @@ Used extensively in production at [BiblioCommons](http://bibliocommons.com) sinc
   
 ## Usage
   
-  * Provide a key satisfying the rules for HashMap keys (equals and hashcode)
+  * Provide a key satisfying the rules for HashMap keys (`equals()` and `hashcode()`)
 
 ## Contributors
 
