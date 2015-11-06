@@ -9,7 +9,7 @@ An in-memory cache implementation with built-in automatic refresh on a configura
  * Configurable fail on initial load
  * Staggered refresh delays to minimize clustering of reloads
   
-Used extensively in production at BiblioCommons since late 2010. 
+Used extensively in production at [BiblioCommons](http://bibliocommons.com) since late 2010. 
   
 ## Usage
   
