@@ -13,7 +13,7 @@ Used extensively in production at BiblioCommons since late 2010.
   
 ## Usage
   
-  * Provide a key satisfying the rules for HashMap kets (equals and hashcode)
+  * Provide a key satisfying the rules for HashMap keys (equals and hashcode)
 
 ## Contributors
 
