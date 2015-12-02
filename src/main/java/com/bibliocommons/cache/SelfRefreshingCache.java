@@ -1,12 +1,12 @@
 package com.bibliocommons.cache;
 
 import com.google.common.base.Preconditions;
-import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.collections4.map.LRUMap;
 import org.apache.log4j.Logger;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -81,8 +81,7 @@ public class SelfRefreshingCache<K, V> {
         this.defaultValue = defaultValue;
         this.useDefaultValueForInitialLoad = useDefaultValueForInitialLoad;
 
-        //noinspection unchecked
-        cache = new ConcurrentHashMap<K, CacheValueProxy<K, V>>(new LRUMap(maxElements));
+        cache = Collections.synchronizedMap(new LRUMap<K, CacheValueProxy<K, V>>(maxElements));
     }
 
     /**

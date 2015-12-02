@@ -11,7 +11,7 @@ repositories {
 dependencies {
     compile 'log4j:log4j:1.2.15'
     compile 'com.google.guava:guava:17.0'
-    compile 'commons-collections:commons-collections:3.2'
+    compile 'org.apache.commons:commons-collections4:4.0'
 
     testCompile 'junit:junit:4.11'
 }
