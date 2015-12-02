@@ -10,6 +10,10 @@ An in-memory cache implementation with built-in automatic refresh on a configura
  * Staggered refresh delays to minimize clustering of reloads
   
 Used extensively in production at [BiblioCommons](http://bibliocommons.com) since late 2010. 
+
+## Compatibility
+
+Compatible with Java 6 and above.
   
 ## Usage
   
